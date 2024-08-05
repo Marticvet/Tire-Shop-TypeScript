@@ -1,28 +1,31 @@
+import React from "react";
 import { useContext, useEffect, useState } from "react";
-import AuthContext from "../../providers/authentication.js";
+// @ts-ignore
+import AuthContext from "../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../services/users.service.ts";
 import { Link } from "react-router-dom";
 import "./styles/Shopping-Cart.css";
 
-function ShoppingCart() {
-    const { user } = useContext(AuthContext);
-    const [models, setModels] = useState([]);
-    const [modelQuantity, setModelQuantity] = useState([]);
+export default function ShoppingCart() {
+    const authCtx = useContext(AuthContext) as AuthContext;
+    const { userId } = authCtx;
+    const [models, setModels] = useState<any[]>([]);
+    const [modelQuantity, setModelQuantity] = useState<any[]>([]);
 
     useEffect(() => {
         const userService = new UsersService();
 
         (async () => {
-            await userService.getUserCartItems(user.sub).then((data) => {
-                if (!Array.isArray(data)) {
+            await userService.getUserCartItems(userId).then((data) => {
+                if (data.length === 0) {
                     setModels([]);
                     return;
                 }
                 setModels(data);
             });
         })();
-    }, [user.sub]);
+    }, [userId]);
 
     function changeQuantityHandler(id) {
         return async (event) => {
@@ -75,7 +78,7 @@ function ShoppingCart() {
     }, [models]);
 
     const totalPrice = models.reduce((prev, current) => {
-        return prev + Number(current.tire_price * current.quantity);
+        return prev + Number(current.tirePrice * current.quantity);
     }, 0);
 
     const totalQuantity = models.reduce((prev, current) => {
@@ -92,7 +95,7 @@ function ShoppingCart() {
                 </p>
             </div>
 
-            <div className={models.length > 0 ? "content" : null}>
+            <div className={models.length > 0 ? "content" : ""}>
                 {models.length > 0 && (
                     <div className="sideBar">
                         <span className="sidebar__subtotal">
@@ -138,10 +141,10 @@ function ShoppingCart() {
                                 >
                                     <div className="image__container">
                                         <Link
-                                            to={`/tires/manufacturers/${model.manufacturer_name}/tire-model/${model.tire_id}`}
+                                            to={`/tires/manufacturers/${model.manufacturerName}/tire-model/${model.tireId}`}
                                         >
                                             <img
-                                                src={model.model_imageUrl}
+                                                src={model.modelImageUrl}
                                                 alt={model.modelName}
                                                 className="image__container--img"
                                             />
@@ -150,39 +153,39 @@ function ShoppingCart() {
 
                                     <div className="model__info">
                                         <Link
-                                            to={`/tires/manufacturers/${model.manufacturer_name}/tire-model/${model.tire_id}`}
+                                            to={`/tires/manufacturers/${model.manufacturerName}/tire-model/${model.tireId}`}
                                             className="font-size model__info--link"
                                         >
-                                            {model.manufacturer_name} <br />{" "}
-                                            {model.model_name}
+                                            {model.manufacturerName} <br />{" "}
+                                            {model.modelName}
                                         </Link>
                                         <p className="model__info--size font-size">
                                             <span>Size:</span>{" "}
-                                            {model.dimention_width +
+                                            {model.dimensionWidth +
                                                 " " +
-                                                model.dimention_height +
+                                                model.dimensionHeight +
                                                 " " +
-                                                model.dimention_diameter}
+                                                model.dimensionDiameter}
                                         </p>
                                         <p className="model__info--season font-size">
                                             <span>Season:</span>
-                                            {model.tire_season}
+                                            {model.tireSeason}
                                         </p>
                                         <p className="model__info--loadIndex font-size">
                                             <span>Load Index:</span>{" "}
-                                            {model.tire_load_index}
+                                            {model.tireLoadIndex}
                                         </p>
                                         <p className="model__info--speadRating font-size">
                                             <span>Speed Index:</span>{" "}
-                                            {model.tire_speed_rating}
+                                            {model.tireSpeedRating}
                                         </p>
                                         <p className="model__info--loudness font-size">
                                             <span>Loudness Level:</span>{" "}
-                                            {model.tire_loudness_level} db
+                                            {model.tireLoudnessLevel} db
                                         </p>{" "}
                                         <p className="model__info--carType font-size">
                                             <span>Car Type:</span>{" "}
-                                            {model.car_type}
+                                            {model.carType}
                                         </p>
                                     </div>
 
@@ -191,18 +194,18 @@ function ShoppingCart() {
                                         <h2 className="price__info--totalPrice">
                                             $
                                             {(
-                                                model.tire_price *
+                                                model.tirePrice *
                                                 modelQuantity[index].quantity
                                             ).toFixed(2)}
                                         </h2>
 
                                         <span>Per Tire:</span>
                                         <h2 className="price__info--price">
-                                            ${model.tire_price}
+                                            ${model.tirePrice}
                                         </h2>
                                         <p className="price__info--availability">
                                             Availability:{" "}
-                                            {model.tire_quantity > 0
+                                            {model.tireQuantity > 0
                                                 ? "In stock"
                                                 : "Out of Stock"}
                                         </p>
@@ -239,5 +242,3 @@ function ShoppingCart() {
         </div>
     );
 }
-
-export default ShoppingCart;

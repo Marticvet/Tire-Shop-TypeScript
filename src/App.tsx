@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-
-// import { createBrowserRouter, Route, RouterProvider } from "react-router-dom";
-
+import {
+    createBrowserRouter,
+    Navigate,
+    Outlet,
+    RouterProvider,
+} from "react-router-dom";
+// @ts-ignore
+import AuthContext, { getUser } from "./providers/authentication.ts";
 // @ts-ignore
 import { Home } from "./components/Home/Home.tsx";
 // @ts-ignore
@@ -25,22 +29,41 @@ import Contacts from "./components/Contacts/Contacts.tsx";
 import Search from "./components/Search/Search.tsx";
 // @ts-ignore
 import FoundTires from "./components/FoundTires/FoundTires.tsx";
-
-
+// @ts-ignore
+import ShoppingCart from "./components/Shopping-Cart/Shopping-Cart.tsx";
+// @ts-ignore
+import LoginInformation from "./components/LoginInformation/LoginInformation.tsx";
 
 export default function App() {
     const [openNavbar, setOpenNavbar] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [currentProfileBtn, setCurrentProfileBtn] = useState("orders");
+    const [authValue, setAuthState] = useState<{
+        user: any;
+        isLoggedIn: boolean;
+    }>({
+        user: getUser(),
+        isLoggedIn: Boolean(getUser()),
+    });
+
+    const ProtectedRoute = ({ user, children }) => {
+        if (!user) {
+            return <Navigate to="/" replace />;
+        }
+
+        return children;
+    };
 
     function Layout() {
         return (
             <>
-                <Navbar  openNavbar={openNavbar}
-                            setOpenNavbar={setOpenNavbar}
-                            currentProfileBtn={currentProfileBtn}
-                            setCurrentProfileBtn={setCurrentProfileBtn}
-                            setIsSidebarOpen={setIsSidebarOpen}/>
+                <Navbar
+                    openNavbar={openNavbar}
+                    setOpenNavbar={setOpenNavbar}
+                    currentProfileBtn={currentProfileBtn}
+                    setCurrentProfileBtn={setCurrentProfileBtn}
+                    setIsSidebarOpen={setIsSidebarOpen}
+                />
                 <Outlet />
                 <Footer />
             </>
@@ -62,7 +85,13 @@ export default function App() {
                 },
                 {
                     path: "tires/manufacturers/:manufacturer_name/tire-models",
-                    element: <ManufacturerModels />,
+                    element: (
+                        <ManufacturerModels
+                            setOpenNavbar={setOpenNavbar}
+                            isSidebarOpen={isSidebarOpen}
+                            setIsSidebarOpen={setIsSidebarOpen}
+                        />
+                    ),
                 },
                 {
                     path: "tires/manufacturers/:manufacturer_name/tire-model/:tireId",
@@ -81,21 +110,42 @@ export default function App() {
                     element: <Search />,
                 },
                 {
+                    path: "loginInformation",
+                    element: (
+                        <ProtectedRoute user={authValue.isLoggedIn}>
+                            <LoginInformation
+                                currentProfileBtn={currentProfileBtn}
+                                setCurrentProfileBtn={setCurrentProfileBtn}
+                            />
+                        </ProtectedRoute>
+                    ),
+                },
+                {
                     path: "search/sizes",
-                    element: 
+                    element: (
                         <FoundTires
                             isSidebarOpen={isSidebarOpen}
                             setIsSidebarOpen={setIsSidebarOpen}
                         />
+                    ),
                 },
-                // Add other routes here
+                {
+                    path: "shopping_cart",
+                    element: (
+                        <ProtectedRoute user={authValue.isLoggedIn}>
+                            <ShoppingCart />,
+                        </ProtectedRoute>
+                    ),
+                },
             ],
         },
     ]);
 
     return (
         <div className="container">
-            <RouterProvider router={router} />
+            <AuthContext.Provider value={{ ...authValue, setAuthState }}>
+                <RouterProvider router={router} />
+            </AuthContext.Provider>
         </div>
     );
 }

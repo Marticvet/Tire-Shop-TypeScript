@@ -1,4 +1,5 @@
-import Config from "../Config.js";
+// @ts-ignore
+import Config from "../Config.ts";
 
 export class RestService {
     resourceUrl: string;
@@ -11,6 +12,7 @@ export class RestService {
     async getAll() {
         return await fetch(this.baseUrl + this.resourceUrl, {
             method: "GET",
+            headers: this.buildDefaultHeaders()
         })
             .then(async (result) => await result.json())
             .catch(this.handleError);
@@ -56,6 +58,7 @@ export class RestService {
         const headers = new Headers();
 
         headers.append("Authorization", localStorage.getItem("token") || '""');
+        headers.append("Content-Type", "application/json");
         
         return headers;
     }

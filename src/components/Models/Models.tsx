@@ -2,11 +2,18 @@ import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
-import AuthContext from "../../providers/authentication.js";
+// @ts-ignore
+import AuthContext from "../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../services/users.service.ts";
 import "./styles/Manufacturer-Models.css";
 import "./styles/Models.css";
+
+interface Item {
+    userId: number;
+    quantity: number;
+    tireId: number;
+}
 
 export default function Models({
     models,
@@ -22,33 +29,36 @@ export default function Models({
     setModelQuantity,
 }) {
     const navigate = useNavigate();
-    // const { user, isLoggedIn } = useContext(AuthContext);
+    const authCtx = useContext(AuthContext) as AuthContext;
+    const { userId, username, isLoggedIn } = authCtx;
     const [addedToCart, setAddedToCart] = useState(false);
     const copiedModels = models.map((model) => {
         return { ...model };
     });
 
-    // useEffect(() => {
-    //     if (addedToCart && isLoggedIn) {
-    //         const userService = new UsersService();
+    useEffect(() => {
+        if (addedToCart && isLoggedIn) {
+            const userService = new UsersService();
 
-    //         const item = JSON.parse(sessionStorage.getItem("item"));
-    //         item.user_id = user.sub;
+            const item: Item = JSON.parse(
+                sessionStorage.getItem("item") || "''"
+            );
+            item.userId = userId;
 
-    //         (async () => {
-    //             await userService
-    //                 .addItemInShoppingCart(item)
-    //                 .then(({ message }) => {
-    //                     if (message.includes("Successfully")) {
-    //                         navigate("/shopping_cart");
-    //                         sessionStorage.clear();
-    //                     }
-    //                 });
-    //         })();
+            (async () => {
+                await userService
+                    .addItemInShoppingCart(item)
+                    .then(({ statusCodeValue }) => {
+                        if (statusCodeValue === 200) {
+                            navigate("/shopping_cart");
+                            sessionStorage.clear();
+                        }
+                    });
+            })();
 
-    //         return;
-    //     }
-    // }, [addedToCart, navigate, isLoggedIn, user]);
+            return;
+        }
+    }, [addedToCart, navigate, isLoggedIn, username]);
 
     function sortingSystem(a, b) {
         if (dropDownCriteria === "category") {
@@ -65,7 +75,7 @@ export default function Models({
     }
 
     function addItemHandler(id) {
-        return async () => {
+        (async () => {
             const userService = new UsersService();
 
             const index = modelQuantity.findIndex((m) => {
@@ -80,29 +90,32 @@ export default function Models({
                 return null;
             }
 
-            const item = {
+            const item: Item = {
                 quantity: modelQuantity[index].quantity,
-                tire_id: id,
+                tireId: id,
+                userId: 0,
             };
 
-            // if (isLoggedIn) {
-            //     item.user_id = user.sub;
+            if (isLoggedIn) {
+                item.userId = userId;
+                
+                await userService
+                    .addItemInShoppingCart(item)
+                    .then(({ statusCodeValue }) => {
+                        console.log(statusCodeValue);
 
-            //     await userService
-            //         .addItemInShoppingCart(item)
-            //         .then(({ message }) => {
-            //             if (message.includes("Successfully")) {
-            //                 navigate("/shopping_cart");
-            //                 sessionStorage.clear();
-            //             }
-            //         });
+                        if (statusCodeValue === 200) {
+                            navigate("/shopping_cart");
+                            sessionStorage.clear();
+                        }
+                    });
 
-            //     return;
-        };
-
-        setOpenNavbar(true);
-        setAddedToCart(true);
-        // sessionStorage.setItem("item", JSON.stringify(item));
+            }else{
+                setOpenNavbar(true);
+                setAddedToCart(true);
+                sessionStorage.setItem("item", JSON.stringify(item));
+            }
+        })();
     }
 
     const availableSpeedIndex: any = [];

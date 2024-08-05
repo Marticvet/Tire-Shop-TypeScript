@@ -54,11 +54,11 @@ export default function RegisterForm({
                     type="text"
                     placeholder="First Name"
                     name="First Name"
-                    value={formData.first_name}
+                    value={formData.firstName}
                     onChange={(event) =>
                         setFormData({
                             ...formData,
-                            first_name: event.target.value.trim(),
+                            firstName: event.target.value.trim(),
                         })
                     }
                     required
@@ -71,11 +71,11 @@ export default function RegisterForm({
                     type="text"
                     placeholder="Last Name"
                     name="Last Name"
-                    value={formData.last_name}
+                    value={formData.lastName}
                     onChange={(event) =>
                         setFormData({
                             ...formData,
-                            last_name: event.target.value.trim(),
+                            lastName: event.target.value.trim(),
                         })
                     }
                     required

@@ -2,7 +2,8 @@ import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link, useParams } from "react-router-dom";
-// import AuthContext from "../../providers/authentication.js";
+// @ts-ignore
+import AuthContext from "../../providers/authentication.ts";
 // @ts-ignore
 import { SizesService } from "../../services/sizes.service.ts";
 // @ts-ignore
@@ -54,34 +55,35 @@ export default function Model({ setOpenNavbar }) {
     const [availableDiameters, setAvailableDiameters] = useState<any[]>([]);
     const [selectedSize, setSelectedSize] = useState("");
     const [quantity, setQuantity] = useState(4);
-    // const { user, isLoggedIn } = useContext(AuthContext);
+    const authCtx = useContext(AuthContext) as AuthContext;
+    const { firstName, lastName, userId, username, isLoggedIn } = authCtx;
     const [addedToCart, setAddedToCart] = useState(false);
     const [isActive, setIsActive] = useState({
         description: true,
         sizes: false,
     });
     
-    // useEffect(() => {
-    //     if (addedToCart && isLoggedIn) {
-    //         const userService = new UsersService();
+    useEffect(() => {
+        if (addedToCart && isLoggedIn) {
+            const userService = new UsersService();
 
-    //         const item = JSON.parse(sessionStorage.getItem("item"));
-    //         item.user_id = user.sub;
+            const item = JSON.parse(sessionStorage.getItem("item") || "''");
+            item.user_id = userId;
 
-    //         (async () => {
-    //             await userService
-    //                 .addItemInShoppingCart(item)
-    //                 .then(({ message }) => {
-    //                     if (message.includes("Successfully")) {
-    //                         navigate("/shopping_cart");
-    //                         sessionStorage.clear();
-    //                     }
-    //                 });
-    //         })();
+            (async () => {
+                await userService
+                    .addItemInShoppingCart(item)
+                    .then(({statusCodeValue}) => {
+                        if (statusCodeValue === 200) {
+                            navigate("/shopping_cart");
+                            sessionStorage.clear();
+                        }
+                    });
+            })();
 
-    //         return;
-    //     }
-    // }, [addedToCart, navigate, isLoggedIn, user]);
+            return;
+        }
+    }, [addedToCart, navigate, isLoggedIn, {firstName, lastName, username, userId}]);
 
     useEffect(() => {
         const manifacturerService = new ManufacturerService();
@@ -125,29 +127,30 @@ export default function Model({ setOpenNavbar }) {
     async function addItemHandler() {
         const userService = new UsersService();
 
-        // const item = {
-        //     quantity,
-        //     tire_id: model.id,
-        // };
+        const item = {
+            userId: userId,
+            quantity,
+            tireId: model.id,
+        };
 
-        // if (isLoggedIn) {
-        //     item.user_id = user.sub;
+        if (isLoggedIn) {
+            item.userId = userId;
 
-        //     await userService
-        //         .addItemInShoppingCart(item)
-        //         .then(({ message }) => {
-        //             if (message.includes("Successfully")) {
-        //                 navigate("/shopping_cart");
-        //                 sessionStorage.clear();
-        //             }
-        //         });
+            await userService
+                .addItemInShoppingCart(item)
+                .then(({statusCodeValue}) => {
+                    if (statusCodeValue === 200) {
+                        navigate("/shopping_cart");
+                        sessionStorage.clear();
+                    }
+                });
 
-        //     return;
-        // }
+            return;
+        }
 
         setOpenNavbar(true);
         setAddedToCart(true);
-        // sessionStorage.setItem("item", JSON.stringify(item));
+        sessionStorage.setItem("item", JSON.stringify(item));
     }
 
     return (

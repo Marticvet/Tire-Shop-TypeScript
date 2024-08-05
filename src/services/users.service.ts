@@ -3,7 +3,7 @@ import { RestService } from "./rest.service.ts";
 
 export class UsersService extends RestService {
     resourceUrl: string;
-    
+
     constructor() {
         super("users");
     }
@@ -24,7 +24,7 @@ export class UsersService extends RestService {
 
     // add item to user's shopping cart
     addItemInShoppingCart(data) {
-        this.resourceUrl = "users/shoppingCart";
+        this.resourceUrl = "users/shoppingCart/" + data.userId;
 
         return this.create(data);
     }

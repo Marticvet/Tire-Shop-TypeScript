@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // @ts-ignore
 import AuthContext, { createSession } from "../../providers/authentication.ts";
@@ -15,9 +14,8 @@ export default function LoginInformation({
     currentProfileBtn,
     setCurrentProfileBtn,
 }) {
-    const { user, setAuthState, isLoggedIn } = useContext(
-        AuthContext
-    ) as AuthContext;
+    const authCtx = useContext(AuthContext) as AuthContext;
+    const { userId, isLoggedIn } = authCtx;
     const [showPopup, setShowPopup] = useState<boolean>(false);
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState<{
@@ -35,7 +33,6 @@ export default function LoginInformation({
     function updateHandler(event) {
         event.preventDefault();
         const userService = new UsersService();
-        const userId = user.sub;
         const { username, name, password, confirmPassword } = userInfo;
 
         if (password !== confirmPassword) {
@@ -48,12 +45,12 @@ export default function LoginInformation({
         }
 
         const index = name.indexOf(" ");
-        const first_name = name.slice(0, index);
-        const last_name = name.slice(index + 1);
+        const firstName = name.slice(0, index);
+        const lastName = name.slice(index + 1);
 
         (async () => {
             await userService
-                .updateUser({ username, first_name, last_name, password }, userId)
+                .updateUser({ username, firstName, lastName, password }, userId)
                 .then(({ message, token, user }) => {
                     if (!token) {
                         window.alert(`Please fill again the fields!`);
@@ -66,8 +63,11 @@ export default function LoginInformation({
                         return;
                     }
                     const isSessionCreated = createSession(token, {
-                        user,
-                        setAuthState,
+                        userId,
+                        firstName,
+                        lastName,
+                        token,
+                        authCtx,
                         isLoggedIn,
                     });
 
@@ -93,8 +93,12 @@ export default function LoginInformation({
             await userService.logoutUser().then((response) => {
                 if (response.status === 200) {
                     localStorage.clear();
-                    setAuthState({
-                        user: null,
+                    authCtx.setAuthState({
+                        userId: null,
+                        firstName: null,
+                        lastName: null,
+                        token: null,
+                        authCtx: null,
                         isLoggedIn: false,
                     });
 

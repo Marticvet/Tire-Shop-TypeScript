@@ -2,7 +2,6 @@ import "./styles/Navbar.css";
 import { AnimatePresence, motion } from "framer-motion";
 import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// @ts-ignore
 import { AiFillCloseCircle } from "react-icons/ai";
 // @ts-ignore
 import LoginForm from "./LoginForm/LoginForm.tsx";
@@ -52,13 +51,13 @@ export function Navbar({
     const [formData, setFormData] = useState<{
         username: string;
         password: string;
-        first_name: string;
-        last_name: string;
+        firstName: string;
+        lastName: string;
     }>({
         username: "",
         password: "",
-        first_name: "",
-        last_name: "",
+        firstName: "",
+        lastName: "",
     });
     const [message, setMessage] = useState<string>("");
     const auth = useContext(AuthContext) as AuthContext;
@@ -124,7 +123,7 @@ export function Navbar({
     async function submitHandler(event) {
         event.preventDefault();
         const userService = new UsersService();
-        const { username, password, first_name, last_name } = formData;
+        const { username, password, firstName, lastName } = formData;
 
         if (isLoginForm) {
             const username = formData.username;
@@ -133,30 +132,25 @@ export function Navbar({
             (async () => {
                 await userService
                     .loginUser({ username, password })
-                    .then((data) => {
-                        
-                        console.log(data);
-                        
-                        // const { token, user } = data;
-                     
+                    .then(({ token, firstName, lastName, userId }) => {
+                        if (!token) {
+                            return;
+                        }
+   
+                        const isSessionCreated = createSession(userId, firstName, lastName,token, auth);
 
-                        // if (!token) {
-                        //     return;
-                        // }
-                        // const isSessionCreated = createSession(token, auth);
-
-                        // if (isSessionCreated) {
-                        //     setShowPopup(true);
-                        //     setOpenNavbar(false);
-                        //     setMessage("Successfully Logged In!");
-                        // }
+                        if (isSessionCreated) {
+                            setShowPopup(true);
+                            setOpenNavbar(false);
+                            setMessage("Successfully Logged In!");
+                        }
                     });
             })();
         } else {
             (async () => {
                 await userService
-                    .registerUser({ username, password, first_name, last_name })
-                    .then(({ message, user }) => {
+                    .registerUser({ username, password, firstName, lastName })
+                    .then(({ message }) => {
                         if (!message.includes("Successfully")) {
                             return;
                         }
@@ -170,27 +164,9 @@ export function Navbar({
             ...formData,
             username: "",
             password: "",
-            first_name: "",
-            last_name: "",
+            firstName: "",
+            lastName: "",
         });
-    }
-
-    function logoutHandler(event) {
-        event.preventDefault();
-        const userService = new UsersService();
-
-        (async () => {
-            await userService.logoutUser().then((response) => {
-                if (response.status === 200) {
-                    localStorage.clear();
-                    auth.setAuthState({
-                        user: null,
-                        isLoggedIn: false,
-                    });
-                    navigate("/");
-                }
-            });
-        })();
     }
 
     useEffect(() => {
@@ -375,14 +351,13 @@ export function Navbar({
                                             onClick={() => setOpenNavbar(false)}
                                         />
                                     </div>
-                                    {/* <AccountDetails
-                                        logoutHandler={logoutHandler}
+                                    <AccountDetails
                                         setOpenNavbar={setOpenNavbar}
                                         currentProfileBtn={currentProfileBtn}
                                         setCurrentProfileBtn={
                                             setCurrentProfileBtn
                                         }
-                                    /> */}
+                                    />
                                 </motion.div>
                             </div>
                         ) : null}

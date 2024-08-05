@@ -1,24 +1,48 @@
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 // @ts-ignore
-import AuthContext from "../../providers/authentication.ts";
+import AuthContext from "../../../providers/authentication.ts";
+// @ts-ignore
+import { UsersService } from "../../../services/users.service.ts";
 
 export default function AccountDetails({
-    logoutHandler,
     setOpenNavbar,
     setCurrentProfileBtn,
 }) {
-    const { user, isLoggedIn } = useContext(AuthContext) as AuthContext;
+    const { firstName, lastName, username, isLoggedIn } = useContext(AuthContext) as AuthContext;
+    const auth = useContext(AuthContext) as AuthContext;
+    const navigate = useNavigate();
+
+    function logoutHandler(event) {
+        event.preventDefault();
+        const userService = new UsersService();
+
+        (async () => {
+            await userService.logoutUser().then((response) => {
+                if (response.status === 200) {
+                    localStorage.clear();
+                    auth.setAuthState({
+                        user: null,
+                        firstName: null,
+                        lastName: null,
+                        username: null,
+                        isLoggedIn: false,
+                    });
+                    navigate("/");
+                }
+            });
+        })();
+    }
 
     return (
         <div className="accountDetails">
             {isLoggedIn && (
                 <div className="accountDetails__info">
                     <h4 className="accountDetails__info--heading-4">
-                        {user.firstName + " " + user.lastName}
+                        {firstName + " " + lastName}
                     </h4>
                     <h5 className="accountDetails__info--heading-5">
-                        {user.username}
+                        {username}
                     </h5>
                 </div>
             )}
