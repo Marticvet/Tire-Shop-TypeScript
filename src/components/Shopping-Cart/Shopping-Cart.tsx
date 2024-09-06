@@ -1,14 +1,14 @@
 import React from "react";
 import { useContext, useEffect, useState } from "react";
 // @ts-ignore
-import AuthContext from "../../providers/authentication.ts";
+import AuthContext, {AuthContextType} from "../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../services/users.service.ts";
 import { Link } from "react-router-dom";
 import "./styles/Shopping-Cart.css";
 
 export default function ShoppingCart() {
-    const authCtx = useContext(AuthContext) as AuthContext;
+    const authCtx = useContext(AuthContext) as AuthContextType;
     const { userId } = authCtx;
     const [models, setModels] = useState<any[]>([]);
     const [modelQuantity, setModelQuantity] = useState<any[]>([]);
@@ -34,10 +34,10 @@ export default function ShoppingCart() {
 
             await userService
                 .editItemQuantity(id, { quantity })
-                .then(({ message, item }) => {
-                    if (message.includes("Successfully")) {
+                .then(({ statusCode, updatedItems }) => {
+                    if (statusCode && statusCode === 200) {
                         const updatedModels = models.map((model) =>
-                            model.id === item.id ? item : model
+                            model.id === updatedItems.id ? updatedItems : model
                         );
                         setModels(updatedModels);
                         return;
@@ -56,8 +56,8 @@ export default function ShoppingCart() {
             if (confirmation) {
                 await userService
                     .deleteItemInShoppingCart(id)
-                    .then(({ status }) => {
-                        if (status === 204) {
+                    .then((response) => {
+                        if (response && response.status === 200) {
                             const deletedModel = models.filter(
                                 (model) => model.id !== id
                             );

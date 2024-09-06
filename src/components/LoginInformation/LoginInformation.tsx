@@ -1,9 +1,13 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // @ts-ignore
-import AuthContext, { createSession } from "../../providers/authentication.ts";
+import AuthContext, {
+    // @ts-ignore
+    AuthContextType,
+    createSession,
+} from "../../providers/authentication.ts";
 // @ts-ignore
-import { UsersService } from "../../services/users.service.ts";
+import {UsersService} from "../../services/users.service.ts"
 import "./styles/LoginInformation.css";
 // @ts-ignore
 import SuccessfulPopup from "../Popup/SuccessfulPopup.tsx";
@@ -14,8 +18,8 @@ export default function LoginInformation({
     currentProfileBtn,
     setCurrentProfileBtn,
 }) {
-    const authCtx = useContext(AuthContext) as AuthContext;
-    const { userId, isLoggedIn } = authCtx;
+    const authCtx = useContext(AuthContext) as AuthContextType;
+    const { userId } = authCtx;
     const [showPopup, setShowPopup] = useState<boolean>(false);
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState<{
@@ -62,14 +66,13 @@ export default function LoginInformation({
                         });
                         return;
                     }
-                    const isSessionCreated = createSession(token, {
+                    const isSessionCreated = createSession(
+                        token,
                         userId,
                         firstName,
                         lastName,
-                        token,
-                        authCtx,
-                        isLoggedIn,
-                    });
+                        token
+                    );
 
                     if (isSessionCreated) {
                         setShowPopup(true);
@@ -85,13 +88,37 @@ export default function LoginInformation({
         })();
     }
 
+    // useEffect(() => {
+    //     if (userId === undefined || userId === null || userId === "") {
+    //         (async () => {
+    //             const userService = new UsersService();
+
+    //             await userService.logoutUser().then((response) => {
+    //                 if (response && response.status === 200) {
+    //                     localStorage.clear();
+    //                     authCtx.setAuthState({
+    //                         userId: null,
+    //                         firstName: null,
+    //                         lastName: null,
+    //                         token: null,
+    //                         authCtx: null,
+    //                         isLoggedIn: false,
+    //                     });
+
+    //                     navigate("/");
+    //                 }
+    //             });
+    //         })();
+    //     }
+    // }, [authCtx, navigate, userId]);
+
     function logoutHandler(event) {
         event.preventDefault();
         const userService = new UsersService();
 
         (async () => {
             await userService.logoutUser().then((response) => {
-                if (response.status === 200) {
+                if (response && response.status === 200) {
                     localStorage.clear();
                     authCtx.setAuthState({
                         userId: null,

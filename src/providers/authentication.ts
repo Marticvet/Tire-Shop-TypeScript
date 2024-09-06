@@ -3,9 +3,17 @@ import { jwtDecode } from "jwt-decode";
 
 const TOKEN_KEY = "token";
 
-const AuthContext = createContext({
+interface AuthContextType {
+    isLoggedIn: boolean;
+    userId: any;
+    firstName: string | null;
+    lastName: string | null;
+    setAuthState: (state: any) => void;
+}
+
+const AuthContext = createContext<AuthContextType>({
     isLoggedIn: false,
-    user: null,
+    userId: null,
     firstName: null,
     lastName: null,
     setAuthState: () => {},
@@ -15,10 +23,8 @@ export const useAuth = () => useContext(AuthContext);
 
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
 
-export const createSession = (userId, firstName, lastName, token, auth) => {
+export const createSession = (userId: string, firstName: string, lastName: string, token: string, auth: AuthContextType) => {
     try {
-        const user = jwtDecode(token);
-        
         localStorage.setItem(TOKEN_KEY, token);
         auth.setAuthState({
             userId,

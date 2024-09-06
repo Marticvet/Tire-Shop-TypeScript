@@ -102,8 +102,6 @@ export default function Models({
                 await userService
                     .addItemInShoppingCart(item)
                     .then(({ statusCodeValue }) => {
-                        console.log(statusCodeValue);
-
                         if (statusCodeValue === 200) {
                             navigate("/shopping_cart");
                             sessionStorage.clear();

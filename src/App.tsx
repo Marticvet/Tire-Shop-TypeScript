@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
     createBrowserRouter,
     Navigate,
@@ -6,7 +6,7 @@ import {
     RouterProvider,
 } from "react-router-dom";
 // @ts-ignore
-import AuthContext, { getUser } from "./providers/authentication.ts";
+import AuthContext, {AuthContextType, getUser } from "./providers/authentication.ts";
 // @ts-ignore
 import { Home } from "./components/Home/Home.tsx";
 // @ts-ignore
@@ -15,8 +15,6 @@ import { Navbar } from "./components/Navbar/Navbar.tsx";
 import Footer from "./components/Footer/Footer.tsx";
 // @ts-ignore
 import Brands from "./components/Brands/Brands.tsx";
-// @ts-ignore
-import Models from "./components/Models/Models.tsx";
 // @ts-ignore
 import ManufacturerModels from "./components/Manufacturer-Models/Manufacturer-Models.tsx";
 // @ts-ignore
@@ -35,6 +33,8 @@ import ShoppingCart from "./components/Shopping-Cart/Shopping-Cart.tsx";
 import LoginInformation from "./components/LoginInformation/LoginInformation.tsx";
 
 export default function App() {
+    const authCtx = useContext(AuthContext) as AuthContext;
+    // const { userId, firstName, lastName } = authCtx;
     const [openNavbar, setOpenNavbar] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [currentProfileBtn, setCurrentProfileBtn] = useState("orders");
@@ -95,7 +95,7 @@ export default function App() {
                 },
                 {
                     path: "tires/manufacturers/:manufacturer_name/tire-model/:tireId",
-                    element: <Model />,
+                    element: <Model setOpenNavbar={setOpenNavbar}/>,
                 },
                 {
                     path: "about",
@@ -106,7 +106,7 @@ export default function App() {
                     element: <Contacts />,
                 },
                 {
-                    path: "search",
+                    path: "search/",
                     element: <Search />,
                 },
                 {
@@ -122,6 +122,14 @@ export default function App() {
                 },
                 {
                     path: "search/sizes",
+                    element: (
+                        <FoundTires
+                            isSidebarOpen={isSidebarOpen}
+                            setIsSidebarOpen={setIsSidebarOpen}
+                        />
+                    ),
+                },         {
+                    path: "search/models",
                     element: (
                         <FoundTires
                             isSidebarOpen={isSidebarOpen}

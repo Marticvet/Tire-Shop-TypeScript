@@ -15,7 +15,7 @@ export default function FoundTires({ isSidebarOpen, setIsSidebarOpen }) {
     const { pathname, search } = useLocation();
     const [models, setModels] = useState<any[]>([]);
     const [dropDownCategory, setDropDownCategory] = useState<string>("");
-    const [messageAlert, setMessageAlert] = useState({});
+    const [messageAlert, setMessageAlert] = useState("");
     const [isActiveDropdown, setIsActiveDropdown] = useState(false);
     const [dropDownCriteria, setDropDownCriteria] = useState("category");
     const [priceCriteria, setPriceCriteria] = useState({
@@ -156,8 +156,8 @@ export default function FoundTires({ isSidebarOpen, setIsSidebarOpen }) {
 
             (async () => {
                 await sizesService.getModelSizes(w, h, d, s, m).then((data) => {
-                    if (!Array.isArray(data) || data.length === 0) {
-                        setMessageAlert(data);
+                    if ( data.length === 0) {
+                        setMessageAlert("No found models!");
                         return;
                     }
 
