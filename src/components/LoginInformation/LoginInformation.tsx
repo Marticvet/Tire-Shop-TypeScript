@@ -7,7 +7,7 @@ import AuthContext, {
     createSession,
 } from "../../providers/authentication.ts";
 // @ts-ignore
-import {UsersService} from "../../services/users.service.ts"
+import { UsersService } from "../../services/users.service.ts";
 import "./styles/LoginInformation.css";
 // @ts-ignore
 import SuccessfulPopup from "../Popup/SuccessfulPopup.tsx";
@@ -20,31 +20,35 @@ export default function LoginInformation({
 }) {
     const authCtx = useContext(AuthContext) as AuthContextType;
     const { userId } = authCtx;
+
     const [showPopup, setShowPopup] = useState<boolean>(false);
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState<{
         username: string;
         name: string;
         password: string;
+        newPassword: string;
         confirmPassword: string;
     }>({
         username: "",
         name: "",
         password: "",
+        newPassword: "",
         confirmPassword: "",
     });
 
     function updateHandler(event) {
         event.preventDefault();
         const userService = new UsersService();
-        const { username, name, password, confirmPassword } = userInfo;
+        const { username, name, password, newPassword, confirmPassword } =
+            userInfo;
 
-        if (password !== confirmPassword) {
+        if (newPassword !== confirmPassword) {
             window.alert(
                 `Passwords must be same! Please fill again the fields!`
             );
 
-            setUserInfo({ ...userInfo, password: "", confirmPassword: "" });
+            setUserInfo({ ...userInfo, newPassword: "", confirmPassword: "" });
             return;
         }
 
@@ -54,63 +58,50 @@ export default function LoginInformation({
 
         (async () => {
             await userService
-                .updateUser({ username, firstName, lastName, password }, userId)
-                .then(({ message, token, user }) => {
-                    if (!token) {
-                        window.alert(`Please fill again the fields!`);
+                .updateUser(
+                    { username, firstName, lastName, password, newPassword },
+                    userId
+                )
+                .then((response) => {
+                    if (response) {
+                        const token = response.token;
 
+                        const isSessionCreated = createSession(
+                            userId,
+                            firstName,
+                            lastName,
+                            token,
+                            authCtx
+                        );
+
+                        if (isSessionCreated) {
+                            setShowPopup(true);
+                            setUserInfo({
+                                ...userInfo,
+                                username: "",
+                                name: "",
+                                password: "",
+                                newPassword: "",
+                                confirmPassword: "",
+                            });
+                        }
+
+                        window.alert("Your profile has been successfully updated!");
+
+                    } else {
+                        
                         setUserInfo({
                             ...userInfo,
                             password: "",
+                            newPassword: "",
                             confirmPassword: "",
                         });
-                        return;
-                    }
-                    const isSessionCreated = createSession(
-                        token,
-                        userId,
-                        firstName,
-                        lastName,
-                        token
-                    );
 
-                    if (isSessionCreated) {
-                        setShowPopup(true);
-                        setUserInfo({
-                            ...userInfo,
-                            username: "",
-                            name: "",
-                            password: "",
-                            confirmPassword: "",
-                        });
+                        window.alert("Old password is incorrect and fill again the fields!");
                     }
                 });
         })();
     }
-
-    // useEffect(() => {
-    //     if (userId === undefined || userId === null || userId === "") {
-    //         (async () => {
-    //             const userService = new UsersService();
-
-    //             await userService.logoutUser().then((response) => {
-    //                 if (response && response.status === 200) {
-    //                     localStorage.clear();
-    //                     authCtx.setAuthState({
-    //                         userId: null,
-    //                         firstName: null,
-    //                         lastName: null,
-    //                         token: null,
-    //                         authCtx: null,
-    //                         isLoggedIn: false,
-    //                     });
-
-    //                     navigate("/");
-    //                 }
-    //             });
-    //         })();
-    //     }
-    // }, [authCtx, navigate, userId]);
 
     function logoutHandler(event) {
         event.preventDefault();
@@ -241,15 +232,16 @@ export default function LoginInformation({
 
                             <label
                                 className="update__form--label"
-                                htmlFor="new password"
+                                htmlFor="new newPassword"
                             >
-                                New Password:{" "}
+                                Old newPassword:{" "}
                             </label>
+
                             <input
                                 className="update__form--input"
                                 type="password"
                                 required
-                                placeholder="Password"
+                                placeholder="newPassword"
                                 value={userInfo.password}
                                 onChange={(event) => {
                                     setUserInfo({
@@ -261,9 +253,29 @@ export default function LoginInformation({
 
                             <label
                                 className="update__form--label"
-                                htmlFor="confirm password"
+                                htmlFor="new newPassword"
                             >
-                                Confirm Password:{" "}
+                                New newPassword:{" "}
+                            </label>
+                            <input
+                                className="update__form--input"
+                                type="password"
+                                required
+                                placeholder="newPassword"
+                                value={userInfo.newPassword}
+                                onChange={(event) => {
+                                    setUserInfo({
+                                        ...userInfo,
+                                        newPassword: event.target.value.trim(),
+                                    });
+                                }}
+                            />
+
+                            <label
+                                className="update__form--label"
+                                htmlFor="confirm newPassword"
+                            >
+                                Confirm newPassword:{" "}
                             </label>
                             <input
                                 className="update__form--input"

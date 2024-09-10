@@ -1,7 +1,9 @@
 import React from "react";
 import { useContext, useEffect, useState } from "react";
 // @ts-ignore
-import AuthContext, {AuthContextType} from "../../providers/authentication.ts";
+import AuthContext, {
+    AuthContextType,
+} from "../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../services/users.service.ts";
 import { Link } from "react-router-dom";
@@ -34,11 +36,14 @@ export default function ShoppingCart() {
 
             await userService
                 .editItemQuantity(id, { quantity })
-                .then(({ statusCode, updatedItems }) => {
-                    if (statusCode && statusCode === 200) {
+                .then(({ message, updatedItems }) => {
+                    if (message && message.includes("successfully")) {
                         const updatedModels = models.map((model) =>
-                            model.id === updatedItems.id ? updatedItems : model
+                            model.id === updatedItems[0].id
+                                ? updatedItems[0]
+                                : model
                         );
+
                         setModels(updatedModels);
                         return;
                     }

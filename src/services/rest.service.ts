@@ -57,7 +57,7 @@ export class RestService {
     buildDefaultHeaders() {
         const headers = new Headers();
 
-        headers.append("Authorization", localStorage.getItem("token") || '""');
+        headers.append("Authorization", localStorage.getItem("token") ?? "");
         headers.append("Content-Type", "application/json");
         
         return headers;

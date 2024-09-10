@@ -132,7 +132,14 @@ export function Navbar({
             (async () => {
                 await userService
                     .loginUser({ username, password })
-                    .then(({ token, firstName, lastName, userId }) => {
+                    .then((response) => {
+                        if(response === undefined) {
+                            window.alert("Invalid username or password");
+                            return;
+                        }
+
+                        const { token, firstName, lastName, userId }= response;
+
                         if (!token) {
                             return;
                         }
@@ -150,7 +157,15 @@ export function Navbar({
             (async () => {
                 await userService
                     .registerUser({ username, password, firstName, lastName })
-                    .then(({ message }) => {
+                    .then((response) => {
+
+                        if(response === undefined) {
+                            window.alert("Invalid username or password");
+                            return;
+                        }
+
+                        const { message } = response;
+                        
                         if (!message.includes("Successfully")) {
                             return;
                         }
