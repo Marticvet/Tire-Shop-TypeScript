@@ -1,16 +1,16 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // @ts-ignore
-import AuthContext from "../../../providers/authentication.ts";
+import AuthContext, { AuthContextType} from "../../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../../services/users.service.ts";
 
-export default function AccountDetails({
-    setOpenNavbar,
-    setCurrentProfileBtn,
-}) {
-    const { firstName, lastName, username, isLoggedIn } = useContext(AuthContext) as AuthContext;
-    const auth = useContext(AuthContext) as AuthContext;
+export default function AccountDetails(props) {
+    const { setOpenNavbar, setCurrentProfileBtn } = props;
+    const { firstName, lastName, username, isLoggedIn } = useContext(
+        AuthContext
+    ) as AuthContextType;
+    const auth = useContext(AuthContext) as AuthContextType;
     const navigate = useNavigate();
 
     function logoutHandler(event) {
@@ -19,7 +19,7 @@ export default function AccountDetails({
 
         (async () => {
             await userService.logoutUser().then((response) => {
-                if (response.status === 200) {
+                if (response && response.status === 200) {
                     localStorage.clear();
                     auth.setAuthState({
                         user: null,

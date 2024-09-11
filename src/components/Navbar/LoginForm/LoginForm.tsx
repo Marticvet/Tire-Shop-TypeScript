@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function LoginForm({ setIsLoginForm, formData, setFormData, submitHandler }) {
+export default function LoginForm(props) {
+    const { setIsLoginForm, formData, setFormData, submitHandler } = props;
     return (
         <div className="loginView">
             <form onSubmit={submitHandler} className="form form__login">

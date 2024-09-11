@@ -1,9 +1,7 @@
 import React from "react";
 import { useContext, useEffect, useState } from "react";
 // @ts-ignore
-import AuthContext, {
-    AuthContextType,
-} from "../../providers/authentication.ts";
+import AuthContext, {AuthContextType} from "../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../services/users.service.ts";
 import { Link } from "react-router-dom";

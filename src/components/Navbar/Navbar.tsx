@@ -12,7 +12,7 @@ import { UsersService } from "../../services/users.service.ts";
 // @ts-ignore
 import AccountDetails from "./AccountDetails/AccountDetails.tsx";
 // @ts-ignore
-import AuthContext, { createSession } from "../../providers/authentication.ts";
+import AuthContext, {AuthContextType, createSession } from "../../providers/authentication.ts";
 // @ts-ignore
 import SuccessfulPopup from "../Popup/SuccessfulPopup.tsx";
 
@@ -60,7 +60,7 @@ export function Navbar({
         lastName: "",
     });
     const [message, setMessage] = useState<string>("");
-    const auth = useContext(AuthContext) as AuthContext;
+    const auth = useContext(AuthContext) as AuthContextType;
     const navigate = useNavigate();
 
     const brands: String[] = [
@@ -190,6 +190,7 @@ export function Navbar({
         return () => {
             document.removeEventListener("keydown", keyDownHandler);
         };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchTerm]);
 
     return (

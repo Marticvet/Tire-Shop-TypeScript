@@ -1,12 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function RegisterForm({
-    setIsLoginForm,
-    formData,
-    setFormData,
-    submitHandler,
-}) {
+export default function RegisterForm(props) {
+    const { setIsLoginForm, formData, setFormData, submitHandler } = props;
+    
     return (
         <div className="registerView">
             <form onSubmit={submitHandler} className="form form__register">

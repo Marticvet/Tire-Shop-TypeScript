@@ -1,19 +1,21 @@
 import React from "react";
 
-export default function DropDownFilterCategories({
-    isActiveDropdown,
-    setIsActiveDropdown,
-    dropDownCategory,
-    setDropDownCategory,
-    setDropDownCriteria,
-    name,
-    widht,
-    height,
-    diameter,
-    lastPath,
-    searchedWord,
-    setIsSidebarOpen,
-}) {
+export default function DropDownFilterCategories(props) {
+    const {
+        isActiveDropdown,
+        setIsActiveDropdown,
+        dropDownCategory,
+        setDropDownCategory,
+        setDropDownCriteria,
+        name,
+        widht,
+        height,
+        diameter,
+        lastPath,
+        searchedWord,
+        setIsSidebarOpen,
+    } = props;
+    
     return (
         <div
             className="searched__wrapper"

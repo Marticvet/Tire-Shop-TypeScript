@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 // @ts-ignore
-import AuthContext from "../../providers/authentication.ts";
+import AuthContext, {AuthContextType } from "../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../services/users.service.ts";
 import "./styles/Manufacturer-Models.css";
@@ -15,21 +15,23 @@ interface Item {
     tireId: number;
 }
 
-export default function Models({
-    models,
-    dropDownCriteria,
-    speedIndexCriteria,
-    loadIndexCriteria,
-    seasonCriteria,
-    carTypeCriteria,
-    priceCriteria,
-    messageAlert,
-    setOpenNavbar,
-    modelQuantity,
-    setModelQuantity,
-}) {
+export default function Models(props) {
+    const {
+        models,
+        dropDownCriteria,
+        speedIndexCriteria,
+        loadIndexCriteria,
+        seasonCriteria,
+        carTypeCriteria,
+        priceCriteria,
+        messageAlert,
+        setOpenNavbar,
+        modelQuantity,
+        setModelQuantity,
+    } = props;
+
     const navigate = useNavigate();
-    const authCtx = useContext(AuthContext) as AuthContext;
+    const authCtx = useContext(AuthContext) as AuthContextType;
     const { userId, username, isLoggedIn } = authCtx;
     const [addedToCart, setAddedToCart] = useState(false);
     const copiedModels = models.map((model) => {
@@ -58,19 +60,19 @@ export default function Models({
 
             return;
         }
-    }, [addedToCart, navigate, isLoggedIn, username]);
+    }, [addedToCart, navigate, isLoggedIn, username, userId]);
 
     function sortingSystem(a, b) {
         if (dropDownCriteria === "category") {
-            return a.tire_model_id - b.tire_model_id;
+            return a.tireModelId - b.tireModelId;
         } else if (dropDownCriteria === "asc") {
             return a.tirePrice - b.tirePrice;
         } else if (dropDownCriteria === "desc") {
             return b.tirePrice - a.tirePrice;
         } else if (dropDownCriteria === "aphabeticaly") {
-            return a.model_name.localeCompare(b.model_name);
+            return a.modelName.localeCompare(b.modelName);
         } else if (dropDownCriteria === "reverseAlphabeticaly") {
-            return b.model_name.localeCompare(a.model_name);
+            return b.modelName.localeCompare(a.modelName);
         }
     }
 
