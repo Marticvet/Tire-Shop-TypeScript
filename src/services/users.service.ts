@@ -40,14 +40,14 @@ export class UsersService extends RestService {
     deleteItemInShoppingCart(id) {
         this.resourceUrl = "users/shoppingCart/" + id;
 
-        return this.delete(id);
+        return this.delete();
     }
 
     // remove all items from user's shopping cart
     emptyUsersShoppingCart(userId) {
         this.resourceUrl = "users/shoppingCart/" + userId;
 
-        return this.delete(userId);
+        return this.delete();
     }
 
     // login user and get auth token

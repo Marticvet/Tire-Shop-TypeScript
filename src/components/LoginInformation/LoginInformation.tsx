@@ -116,7 +116,6 @@ export default function LoginInformation({
                         firstName: null,
                         lastName: null,
                         token: null,
-                        authCtx: null,
                         isLoggedIn: false,
                     });
 

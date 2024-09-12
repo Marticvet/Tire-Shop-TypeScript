@@ -5,11 +5,17 @@ const TOKEN_KEY = "token";
 
 interface AuthContextType {
     isLoggedIn: boolean;
-    userId: any;
+    userId: string | null;
     firstName: string | null;
     lastName: string | null;
-    setAuthState: (state: any) => void;
+    setAuthState: React.Dispatch<React.SetStateAction<{
+        userId: string | null;
+        firstName: string | null;
+        lastName: string | null;
+        isLoggedIn: boolean;
+    }>>;
 }
+
 
 const AuthContext = createContext<AuthContextType>({
     isLoggedIn: false,
@@ -30,17 +36,15 @@ export const createSession = (userId: string, firstName: string, lastName: strin
             userId,
             firstName,
             lastName,
-            token,
-            auth,
             isLoggedIn: true,
         });
-
         return true;
     } catch (error) {
-        console.warn(error);
+        console.warn("Error during session creation:", error);
         return false;
     }
 };
+
 
 export const getUser = () => {
     try {

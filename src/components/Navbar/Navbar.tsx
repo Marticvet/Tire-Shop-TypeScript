@@ -145,7 +145,7 @@ export function Navbar({
                         }
    
                         const isSessionCreated = createSession(userId, firstName, lastName,token, auth);
-
+                        
                         if (isSessionCreated) {
                             setShowPopup(true);
                             setOpenNavbar(false);

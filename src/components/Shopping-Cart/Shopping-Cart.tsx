@@ -1,7 +1,7 @@
 import React from "react";
 import { useContext, useEffect, useState } from "react";
 // @ts-ignore
-import AuthContext, {AuthContextType} from "../../providers/authentication.ts";
+import AuthContext, {AuthContextType, getUser} from "../../providers/authentication.ts";
 // @ts-ignore
 import { UsersService } from "../../services/users.service.ts";
 import { Link } from "react-router-dom";
@@ -12,6 +12,10 @@ export default function ShoppingCart() {
     const { userId } = authCtx;
     const [models, setModels] = useState<any[]>([]);
     const [modelQuantity, setModelQuantity] = useState<any[]>([]);
+
+    // console.log(authCtx, `authCtx`);
+    // console.log(getUser());
+    
 
     useEffect(() => {
         const userService = new UsersService();
