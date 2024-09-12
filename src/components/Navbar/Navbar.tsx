@@ -133,12 +133,13 @@ export function Navbar({
                 await userService
                     .loginUser({ username, password })
                     .then((response) => {
+
                         if(response === undefined) {
                             window.alert("Invalid username or password");
                             return;
                         }
 
-                        const { token, firstName, lastName, userId }= response;
+                        const { token, firstName, lastName, userId } = response;
 
                         if (!token) {
                             return;
@@ -160,7 +161,7 @@ export function Navbar({
                     .then((response) => {
 
                         if(response === undefined) {
-                            window.alert("Invalid username or password");
+                            window.alert("Email already used!");
                             return;
                         }
 
