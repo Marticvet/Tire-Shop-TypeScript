@@ -25,44 +25,44 @@ const images = {
     yokohama: require("../../img/Yokohama_logo.jpg"),
 };
 
-interface Model {
-    id: number,
-    tireModelId: number,
-    tireLoudnessLevel: number,
-    tirePrice: number,
-    tireQuantity: number,
-    tireLoadIndex: number,
-    tireSpeedRating: string,
-    tireSeason: string,
-    modelName: string,
-    modelImageUrl: string,
-    modelDescription: string,
-    manufacturerName: string,
-    dimensionWidth: number,
-    dimensionHeight: number,
-    dimensionDiameter: number,
-    fuelEfficiency: string,
-    gripRating: string,
-    carType: string,
-    manufacturerImageUrl: string
-  }
+interface TypeModel {
+    id: number;
+    tireModelId: number;
+    tireLoudnessLevel: number;
+    tirePrice: number;
+    tireQuantity: number;
+    tireLoadIndex: number;
+    tireSpeedRating: string;
+    tireSeason: string;
+    modelName: string;
+    modelImageUrl: string;
+    modelDescription: string;
+    manufacturerName: string;
+    dimensionWidth: number;
+    dimensionHeight: number;
+    dimensionDiameter: number;
+    fuelEfficiency: string;
+    gripRating: string;
+    carType: string;
+    manufacturerImageUrl: string;
+}
 
 export default function Model({ setOpenNavbar }) {
     const navigate = useNavigate();
     const { manufacturer_name, tireId } = useParams();
-    const [model, setModel] = useState<Partial<Model>>({});
+    const [model, setModel] = useState<Partial<TypeModel>>({});
     const [availableSizes, setAvailableSizes] = useState<any[]>([]);
     const [availableDiameters, setAvailableDiameters] = useState<any[]>([]);
     const [selectedSize, setSelectedSize] = useState("");
     const [quantity, setQuantity] = useState(4);
-    const authCtx = useContext(AuthContext) as AuthContext;
-    const { firstName, lastName, userId, username, isLoggedIn } = authCtx;
+    const authCtx = useContext(AuthContext);
+    const { userId, isLoggedIn } = authCtx;
     const [addedToCart, setAddedToCart] = useState(false);
     const [isActive, setIsActive] = useState({
         description: true,
         sizes: false,
     });
-    
+
     useEffect(() => {
         if (addedToCart && isLoggedIn) {
             const userService = new UsersService();
@@ -73,7 +73,7 @@ export default function Model({ setOpenNavbar }) {
             (async () => {
                 await userService
                     .addItemInShoppingCart(item)
-                    .then(({statusCodeValue}) => {
+                    .then(({ statusCodeValue }) => {
                         if (statusCodeValue === 200) {
                             navigate("/shopping_cart");
                             sessionStorage.clear();
@@ -83,7 +83,7 @@ export default function Model({ setOpenNavbar }) {
 
             return;
         }
-    }, [addedToCart, navigate, isLoggedIn, {firstName, lastName, username, userId}]);
+    }, [addedToCart, navigate, isLoggedIn, userId]);
 
     useEffect(() => {
         const manifacturerService = new ManufacturerService();
@@ -138,7 +138,7 @@ export default function Model({ setOpenNavbar }) {
 
             await userService
                 .addItemInShoppingCart(item)
-                .then(({statusCodeValue}) => {
+                .then(({ statusCodeValue }) => {
                     if (statusCodeValue === 200) {
                         navigate("/shopping_cart");
                         sessionStorage.clear();
@@ -163,7 +163,7 @@ export default function Model({ setOpenNavbar }) {
                 <div className="product__details">
                     <img
                         className="product__details--img"
-                        src={images[(manufactrerName ?? "")]}
+                        src={images[manufactrerName ?? ""]}
                         alt={model.modelName}
                     />
                     <h4 className="product__details--heading-4">

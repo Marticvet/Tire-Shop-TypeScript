@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 const TOKEN_KEY = "token";
 
 interface AuthContextType {
+    username: string | null;
     isLoggedIn: boolean;
     userId: string | null;
     firstName: string | null;
@@ -18,6 +19,7 @@ interface AuthContextType {
 
 
 const AuthContext = createContext<AuthContextType>({
+    username: null,
     isLoggedIn: false,
     userId: null,
     firstName: null,
